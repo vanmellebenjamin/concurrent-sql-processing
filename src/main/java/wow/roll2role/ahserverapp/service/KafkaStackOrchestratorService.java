@@ -65,13 +65,11 @@ public class KafkaStackOrchestratorService {
         });
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void releaseLock(final String correlationId) {
         kafkaStackProcessingRepository.findByCorrelationId(correlationId)
                 .ifPresent(kafkaStackProcessingRepository::delete);
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public List<String> findDistinctByStatus(final String correlationId, final PageRequest pageRequest) {
         return kafkaStackRepository.findDistinctByStatus(correlationId, pageRequest);
     }
