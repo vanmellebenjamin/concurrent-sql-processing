@@ -26,12 +26,12 @@ public class KafkaStackService {
     private final KafkaStackRepository kafkaStackRepository;
 
     @Autowired
-    private final KafkaStackOrchestratorService kafkaStackOrchestratorService;
+    private final KafkaStackComponent kafkaStackComponent;
 
     public KafkaStackService(final KafkaStackRepository kafkaStackRepository,
-                             final KafkaStackOrchestratorService kafkaStackOrchestratorService) {
+                             final KafkaStackComponent kafkaStackComponent) {
         this.kafkaStackRepository = kafkaStackRepository;
-        this.kafkaStackOrchestratorService = kafkaStackOrchestratorService;
+        this.kafkaStackComponent = kafkaStackComponent;
     }
 
     @Transactional
@@ -58,17 +58,17 @@ public class KafkaStackService {
     }
 
     public void processData() {
-        final List<String> correlationIds = kafkaStackOrchestratorService.findDistinctByStatus("NEW",  PageRequest.of(0, ENTITIES_PROCESSED_PER_THREAD));
+        final List<String> correlationIds = kafkaStackComponent.findDistinctByStatus("NEW",  PageRequest.of(0, ENTITIES_PROCESSED_PER_THREAD));
         Collections.shuffle(correlationIds);
         final AtomicInteger tried = new AtomicInteger(0);
         correlationIds.forEach(correlationId -> {
             tried.incrementAndGet();
-            if (kafkaStackOrchestratorService.lockCorrelationId(correlationId)) {
-                final List<Long> kafkaStacks = kafkaStackOrchestratorService.findAllByCorrelationId(correlationId);
-                kafkaStacks.forEach(kafkaStackOrchestratorService::updateStatusAndDateAndCounter);
-                kafkaStackOrchestratorService.releaseLock(correlationId);
+            if (kafkaStackComponent.lockCorrelationId(correlationId)) {
+                final List<Long> kafkaStacks = kafkaStackComponent.findAllByCorrelationId(correlationId);
+                kafkaStacks.forEach(kafkaStackComponent::updateStatusAndDateAndCounter);
+                kafkaStackComponent.releaseLock(correlationId);
             } else {
-                kafkaStackOrchestratorService.releaseLockIfTooOld(correlationId);
+                kafkaStackComponent.releaseLockIfTooOld(correlationId);
             }
         });
         System.out.println("Processed: " + tried.get());

@@ -15,7 +15,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @Component
-public class KafkaStackOrchestratorService {
+public class KafkaStackComponent {
 
     @Autowired
     private final KafkaStackProcessingRepository kafkaStackProcessingRepository;
@@ -23,8 +23,8 @@ public class KafkaStackOrchestratorService {
     @Autowired
     private final KafkaStackRepository kafkaStackRepository;
 
-    public KafkaStackOrchestratorService(final KafkaStackProcessingRepository kafkaStackProcessingRepository,
-                                         final KafkaStackRepository kafkaStackRepository) {
+    public KafkaStackComponent(final KafkaStackProcessingRepository kafkaStackProcessingRepository,
+                               final KafkaStackRepository kafkaStackRepository) {
         this.kafkaStackProcessingRepository = kafkaStackProcessingRepository;
         this.kafkaStackRepository = kafkaStackRepository;
     }
